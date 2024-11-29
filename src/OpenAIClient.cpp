@@ -9,7 +9,12 @@
 std::shared_ptr<OpenAIClient> OpenAIClient::instance = nullptr;
 
 OpenAIClient::OpenAIClient() {
-  apiKey = drogon::app().getCustomConfig()["openai"]["api_key"].asString();
+  // Obter a chave da API da OpenAI da variável de ambiente
+  const char* api_key_cstr = std::getenv("OPENAI_API_KEY");
+  if (!api_key_cstr) {
+    throw std::runtime_error("Environment variable OPENAI_API_KEY not set");
+  }
+  apiKey = std::string(api_key_cstr);
   apiUrl = "https://api.openai.com/v1/chat/completions";
 }
 

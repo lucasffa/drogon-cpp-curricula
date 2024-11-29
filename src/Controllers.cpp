@@ -75,6 +75,42 @@ void LanguageController::createLanguage(
       });
 }
 
+void LanguageController::getLanguages(
+    const drogon::HttpRequestPtr &req,
+    std::function<void(const drogon::HttpResponsePtr &)> &&callback) {
+  languageService->getLanguages(
+      [callback](const std::vector<Language> &languages,
+                 const std::optional<std::string> &error) {
+        if (error) {
+          Json::Value errorResponse;
+          errorResponse["error"] =
+              *error;  // Cria um JSON válido com a mensagem de erro
+          auto resp = drogon::HttpResponse::newHttpJsonResponse(errorResponse);
+          resp->setStatusCode(drogon::k500InternalServerError);
+          callback(resp);
+        } else {
+          Json::Value jsonLanguages(Json::arrayValue);
+          for (const auto &lang : languages) {
+            Json::Value jsonLang;
+            jsonLang["id"] = lang.id;
+            jsonLang["name"] = lang.name;
+            jsonLang["description"] = lang.description;
+
+            Json::Value countries(Json::arrayValue);
+            for (const auto &country : lang.spokenInCountries) {
+              countries.append(country);
+            }
+            jsonLang["spokenInCountries"] = countries;
+
+            jsonLanguages.append(jsonLang);
+          }
+          auto resp = drogon::HttpResponse::newHttpJsonResponse(jsonLanguages);
+          resp->setStatusCode(drogon::k200OK);
+          callback(resp);
+        }
+      });
+}
+
 void LevelController::createLevel(
     const drogon::HttpRequestPtr &req,
     std::function<void(const drogon::HttpResponsePtr &)> &&callback) {

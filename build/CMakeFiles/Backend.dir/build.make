@@ -205,6 +205,8 @@ Backend: CMakeFiles/Backend.dir/src/Validators.cpp.o
 Backend: CMakeFiles/Backend.dir/src/OpenAIClient.cpp.o
 Backend: CMakeFiles/Backend.dir/build.make
 Backend: /usr/local/lib/libdrogon.a
+Backend: /usr/local/lib/libbsoncxx.so
+Backend: /usr/local/lib/libmongocxx.so
 Backend: /usr/local/lib/libtrantor.a
 Backend: /usr/lib/x86_64-linux-gnu/libssl.so
 Backend: /usr/lib/x86_64-linux-gnu/libcrypto.so

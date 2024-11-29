@@ -4,7 +4,7 @@
 # compile CXX with /usr/bin/g++
 CXX_DEFINES = 
 
-CXX_INCLUDES = -I/home/lucas/coding/drogon-cpp-curricula/include -I/home/lucas/coding/drogon-cpp-curricula/src -I/usr/local/include/mongocxx/v_noabi -I/usr/local/include/bsoncxx/v_noabi -isystem /usr/include/jsoncpp
+CXX_INCLUDES = -I/home/lucas/coding/drogon-cpp-curricula/include -I/home/lucas/coding/drogon-cpp-curricula/src -I/usr/local/include/bsoncxx/v_noabi -I/usr/local/include/mongocxx/v_noabi -isystem /usr/include/jsoncpp
 
-CXX_FLAGS = -g
+CXX_FLAGS = 
 

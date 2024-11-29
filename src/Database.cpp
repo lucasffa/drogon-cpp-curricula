@@ -6,12 +6,20 @@
 #include <mongocxx/client.hpp>
 #include <mongocxx/instance.hpp>
 
+mongocxx::instance instance{};  // Deve ser declarado uma vez
+
 class MongoDatabase::Impl {
  public:
   Impl() {
-    mongocxx::instance instance{};  // Deve ser declarado uma vez
-    std::string uri_str =
-        drogon::app().getCustomConfig()["mongo"]["uri"].asString();
+    // Usar a variável global para instanciar
+    const char* uri_cstr = std::getenv("MONGO_URI");
+    if (!uri_cstr) {
+      throw std::runtime_error("Environment variable MONGO_URI not set");
+    }
+    std::string uri_str(uri_cstr);
+
+    LOG_DEBUG << "MongoDB URI: " << uri_str;
+
     mongocxx::uri uri(uri_str);
     client = mongocxx::client(uri);
     db = client["language_backend"];
@@ -34,15 +42,24 @@ void MongoDatabase::insertLanguage(
   auto collection = impl->db["languages"];
   bsoncxx::builder::stream::document document{};
 
+  // Construa o array para "spoken_in_countries"
+  bsoncxx::builder::basic::array countries_array;
+  for (const auto& country : language.spokenInCountries) {
+    countries_array.append(country);
+  }
+
   document << "name" << language.name << "description" << language.description
-           << "spoken_in_countries" << language.spokenInCountries;
+           << "spoken_in_countries" << countries_array.view();
 
-  auto result = collection.insert_one(document.view());
-
-  if (result && result->result().inserted_count() == 1) {
-    callback(std::nullopt);  // Sucesso
-  } else {
-    callback("Failed to insert language into database.");
+  try {
+    auto result = collection.insert_one(document.view());
+    if (result && result->result().inserted_count() == 1) {
+      callback(std::nullopt);  // Sucesso
+    } else {
+      callback("Failed to insert language into database.");
+    }
+  } catch (const std::exception& e) {
+    callback("Exception while inserting language: " + std::string(e.what()));
   }
 }
 

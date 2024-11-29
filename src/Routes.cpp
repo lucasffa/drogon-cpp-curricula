@@ -25,6 +25,21 @@ void Routes::init() {
         }
       });
 
+  // Rota para buscar Language por ID
+  drogon::app().registerHandler(
+      "/languages/{languageId}",
+      [languageController](
+          const drogon::HttpRequestPtr &req,
+          std::function<void(const drogon::HttpResponsePtr &)> &&callback) {
+        if (req->getMethod() == drogon::Get) {
+          languageController->getLanguageById(req, std::move(callback));
+        } else {
+          auto resp = drogon::HttpResponse::newHttpResponse();
+          resp->setStatusCode(drogon::k405MethodNotAllowed);
+          callback(resp);
+        }
+      });
+
   // Rotas para Level
   drogon::app().registerHandler(
       "/languages/{languageId}/levels",

@@ -25,6 +25,9 @@ class LanguageController {
   void getLanguages(
       const drogon::HttpRequestPtr &req,
       std::function<void(const drogon::HttpResponsePtr &)> &&callback);
+  void getLanguageById(
+      const drogon::HttpRequestPtr &req,
+      std::function<void(const drogon::HttpResponsePtr &)> &&callback);
 
  private:
   std::shared_ptr<LanguageService> languageService;

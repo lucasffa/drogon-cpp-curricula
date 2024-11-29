@@ -60,6 +60,14 @@ void LanguageService::getLanguages(
   database->getLanguages(callback);
 }
 
+void LanguageService::getLanguageById(
+    const std::string& languageId,
+    std::function<void(const std::optional<Language>& language,
+                       const std::optional<std::string>& error)>
+        callback) {
+  database->getLanguageById(languageId, callback);
+}
+
 void LevelService::createLevel(
     const LevelDTO& dto, const std::string& languageId,
     std::function<void(const std::optional<Level>& level,

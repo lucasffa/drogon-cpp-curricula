@@ -20,6 +20,11 @@ class Database {
       std::function<void(const std::vector<Language>& languages,
                          const std::optional<std::string>& error)>
           callback) = 0;
+  virtual void getLanguageById(
+      const std::string& languageId,
+      std::function<void(const std::optional<Language>& language,
+                         const std::optional<std::string>& error)>
+          callback) = 0;
 
   // Métodos abstratos para operações com Level
   virtual void insertLevel(
@@ -49,7 +54,11 @@ class MongoDatabase : public Database {
   void getLanguages(std::function<void(const std::vector<Language>& languages,
                                        const std::optional<std::string>& error)>
                         callback) override;
-
+  void getLanguageById(
+      const std::string& languageId,
+      std::function<void(const std::optional<Language>& language,
+                         const std::optional<std::string>& error)>
+          callback) override;
   void insertLevel(const Level& level,
                    std::function<void(const std::optional<std::string>& error)>
                        callback) override;

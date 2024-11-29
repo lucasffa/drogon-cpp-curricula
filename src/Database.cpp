@@ -18,7 +18,7 @@ class MongoDatabase::Impl {
     }
     std::string uri_str(uri_cstr);
 
-    LOG_DEBUG << "MongoDB URI: " << uri_str;
+    LOG_DEBUG << "MongoDB URI: " << "uri_str ocultado";
 
     mongocxx::uri uri(uri_str);
     client = mongocxx::client(uri);
@@ -105,6 +105,56 @@ void MongoDatabase::getLanguages(
   }
 
   callback(languages, std::nullopt);
+}
+
+void MongoDatabase::getLanguageById(
+    const std::string& languageId,
+    std::function<void(const std::optional<Language>& language,
+                       const std::optional<std::string>& error)>
+        callback) {
+  auto collection = impl->db["languages"];
+  bsoncxx::builder::stream::document filter{};
+
+  try {
+    filter << "_id" << bsoncxx::oid{languageId};
+  } catch (const std::exception& e) {
+    callback(std::nullopt,
+             "Invalid languageId format: " + std::string(e.what()));
+    return;
+  }
+
+  auto result = collection.find_one(filter.view());
+  if (result) {
+    Language lang;
+    auto doc = *result;
+
+    if (doc["_id"] && doc["_id"].type() == bsoncxx::type::k_oid) {
+      lang.id = doc["_id"].get_oid().value.to_string();
+    }
+
+    if (doc["name"] && doc["name"].type() == bsoncxx::type::k_string) {
+      lang.name = std::string(doc["name"].get_string().value);
+    }
+
+    if (doc["description"] &&
+        doc["description"].type() == bsoncxx::type::k_string) {
+      lang.description = std::string(doc["description"].get_string().value);
+    }
+
+    if (doc["spoken_in_countries"] &&
+        doc["spoken_in_countries"].type() == bsoncxx::type::k_array) {
+      for (const auto& country : doc["spoken_in_countries"].get_array().value) {
+        if (country.type() == bsoncxx::type::k_string) {
+          lang.spokenInCountries.push_back(
+              std::string(country.get_string().value));
+        }
+      }
+    }
+
+    callback(lang, std::nullopt);
+  } else {
+    callback(std::nullopt, std::nullopt);  // Language not found
+  }
 }
 
 void MongoDatabase::insertLevel(

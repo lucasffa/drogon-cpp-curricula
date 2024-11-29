@@ -75,6 +75,53 @@ void LanguageController::createLanguage(
       });
 }
 
+void LanguageController::getLanguageById(
+    const drogon::HttpRequestPtr &req,
+    std::function<void(const drogon::HttpResponsePtr &)> &&callback) {
+  auto languageId = req->getParameter("languageId");
+  if (languageId.empty()) {
+    Json::Value errorResponse;
+    errorResponse["error"] = "languageId is required";
+    auto resp = drogon::HttpResponse::newHttpJsonResponse(errorResponse);
+    resp->setStatusCode(drogon::k400BadRequest);
+    callback(resp);
+    return;
+  }
+
+  languageService->getLanguageById(
+      languageId, [callback](const std::optional<Language> &language,
+                             const std::optional<std::string> &error) {
+        if (error) {
+          Json::Value errorResponse;
+          errorResponse["error"] = *error;
+          auto resp = drogon::HttpResponse::newHttpJsonResponse(errorResponse);
+          resp->setStatusCode(drogon::k500InternalServerError);
+          callback(resp);
+        } else if (!language) {
+          Json::Value errorResponse;
+          errorResponse["error"] = "Language not found";
+          auto resp = drogon::HttpResponse::newHttpJsonResponse(errorResponse);
+          resp->setStatusCode(drogon::k404NotFound);
+          callback(resp);
+        } else {
+          Json::Value jsonLang;
+          jsonLang["id"] = language->id;
+          jsonLang["name"] = language->name;
+          jsonLang["description"] = language->description;
+
+          Json::Value countries(Json::arrayValue);
+          for (const auto &country : language->spokenInCountries) {
+            countries.append(country);
+          }
+          jsonLang["spokenInCountries"] = countries;
+
+          auto resp = drogon::HttpResponse::newHttpJsonResponse(jsonLang);
+          resp->setStatusCode(drogon::k200OK);
+          callback(resp);
+        }
+      });
+}
+
 void LanguageController::getLanguages(
     const drogon::HttpRequestPtr &req,
     std::function<void(const drogon::HttpResponsePtr &)> &&callback) {

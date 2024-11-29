@@ -29,6 +29,12 @@ class LanguageService {
                                        const std::optional<std::string>& error)>
                         callback);
 
+  void getLanguageById(
+      const std::string& languageId,
+      std::function<void(const std::optional<Language>& language,
+                         const std::optional<std::string>& error)>
+          callback);
+
  private:
   std::shared_ptr<Database> database;
   std::shared_ptr<OpenAIClient> openAIClient;

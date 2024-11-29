@@ -1,0 +1,14 @@
+{
+    "listeners": [
+        {
+            "address": "0.0.0.0",
+            "port": 8080
+        }
+    ],
+    "mongo": {
+        "uri": "mongodb+srv://<my_user>:<db_password>@cluster0.4e1ue.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0"
+    },
+    "openai": {
+        "api_key": "<your_openai_api_key>"
+    }
+}

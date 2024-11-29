@@ -9,6 +9,8 @@ find_package(bsoncxx REQUIRED)
 
 include_directories(include)
 include_directories(src)
+include_directories(/usr/local/include/mongocxx/v_noabi)
+include_directories(/usr/local/include/bsoncxx/v_noabi)
 
 add_executable(Backend
     main.cpp

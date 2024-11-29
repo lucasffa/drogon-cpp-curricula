@@ -1,0 +1,3 @@
+/home/lucas/coding/drogon-cpp-curricula/build/CMakeFiles/Backend.dir
+/home/lucas/coding/drogon-cpp-curricula/build/CMakeFiles/edit_cache.dir
+/home/lucas/coding/drogon-cpp-curricula/build/CMakeFiles/rebuild_cache.dir
